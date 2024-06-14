@@ -106,5 +106,6 @@ fs.readFile('token', 'utf8', (err, data) => {
     console.error('Error reading file:', err);
     return;
   }
+  console.log(data.trim());
   client.login(data.trim());
 });
