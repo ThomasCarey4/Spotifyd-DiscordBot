@@ -1,4 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js');
+const fs = require('fs');
 const { StreamType } = require('@discordjs/voice');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus } = require('@discordjs/voice');
 const { exec } = require('child_process');
@@ -100,4 +101,10 @@ client.on('messageCreate', async message => {
   }
 });
 
-client.login('MTI1MDk0Mzg4Mzc5NDE4NjI4MA.GQiElJ.DXHitDpI9FAmm-U7NKuVdQk0jJ8jKrvd7qzRIM');
+fs.readFile('token', 'utf8', (err, data) => {
+  if (err) {
+    console.error('Error reading file:', err);
+    return;
+  }
+  client.login(data.trim());
+});
