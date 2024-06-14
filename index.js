@@ -48,7 +48,7 @@ class BufferingTransform extends Transform {
 function startMicrophoneStreaming() {
   voiceConnection.subscribe(audioPlayer);
   const spawn = require('child_process').spawn;
-  const micStream = spawn('parec', ['--format=s16le', '-d', 'virtual1.monitor']);
+  const micStream = spawn('parec', ['--format=s16le', '-d', 'virtual_sink.monitor']);
   const ffmpeg = spawn('ffmpeg', ['-f', 's16le', '-ar', '44100', '-ac', '2', '-i', 'pipe:0', '-f', 'opus', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] });
   micStream.stdout.pipe(ffmpeg.stdin);
   ffmpeg.stdout.pipe(bufferingTransform);
@@ -106,6 +106,5 @@ fs.readFile('token', 'utf8', (err, data) => {
     console.error('Error reading file:', err);
     return;
   }
-  console.log(data.trim());
   client.login(data.trim());
 });
