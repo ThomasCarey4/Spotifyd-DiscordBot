@@ -1,10 +1,7 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const fs = require('fs');
-const { StreamType } = require('@discordjs/voice');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus } = require('@discordjs/voice');
-const { exec } = require('child_process');
-
-const record = require('node-record-lpcm16');
+import { Client, GatewayIntentBits } from 'discord.js';
+import { readFile } from 'fs';
+import { StreamType } from '@discordjs/voice';
+import { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus } from '@discordjs/voice';
 
 const client = new Client({ 
   intents: [
@@ -14,9 +11,9 @@ const client = new Client({
     GatewayIntentBits.MessageContent]
 });
 
-const Transform = require('stream').Transform;
+import { Transform } from 'stream';
 
-const { Readable } = require('stream');
+import { Readable } from 'stream';
 
 class BufferingTransform extends Transform {
   constructor(options) {
@@ -48,7 +45,7 @@ class BufferingTransform extends Transform {
 function startMicrophoneStreaming() {
   voiceConnection.subscribe(audioPlayer);
   const spawn = require('child_process').spawn;
-  const micStream = spawn('parec', ['--format=s16le', '-d', 'virtual_sink.monitor']);
+  const micStream = spawn('parec', ['--format=s16le', '-d', 'auto_null.monitor']);
   const ffmpeg = spawn('ffmpeg', ['-f', 's16le', '-ar', '44100', '-ac', '2', '-i', 'pipe:0', '-f', 'opus', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] });
   micStream.stdout.pipe(ffmpeg.stdin);
   ffmpeg.stdout.pipe(bufferingTransform);
@@ -101,7 +98,7 @@ client.on('messageCreate', async message => {
   }
 });
 
-fs.readFile('token', 'utf8', (err, data) => {
+readFile('token', 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
     return;
