@@ -15,7 +15,7 @@ const useBuffering = false; // Set this to false to disable buffering
 
 const Transform = require('stream').Transform;
 
-const { Readable } = require('stream');
+const { Readable, Writable } = require('stream');
 
 
 class BufferingTransform extends Transform {
@@ -51,9 +51,11 @@ function startMicrophoneStreaming() {
   const micStream = spawn('parec', ['--format=s16le', '-d', 'auto_null.monitor']);
   const ffmpeg = spawn('ffmpeg', ['-f', 's16le', '-ar', '44100', '-ac', '2', '-i', 'pipe:0', '-f', 'opus', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] });
 
-  const audioStream = new Readable({
-    read() {
-      // The _read method is required but can be a no-op
+  const audioStream = new Writable({
+    write(chunk, encoding, callback) {
+      // Handle the data however you need to
+      console.log(`Received chunk of size ${chunk.length}`);
+      callback();
     }
   });
 
