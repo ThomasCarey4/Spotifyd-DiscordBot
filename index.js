@@ -13,6 +13,16 @@ const client = new Client({
 
 const useBuffering = false; // Set this to false to disable buffering
 
+let deviceName;
+
+fs.readFile('device', 'utf8', (err, data) => {
+  if (err) {
+    console.error('Error reading file:', err);
+    return;
+  }
+  deviceName = data.trim();
+});
+
 const Transform = require('stream').Transform;
 
 const { Readable, Writable } = require('stream');
@@ -48,7 +58,7 @@ class BufferingTransform extends Transform {
 function startMicrophoneStreaming() {
   voiceConnection.subscribe(audioPlayer);
   const spawn = require('child_process').spawn;
-  const micStream = spawn('parec', ['--format=s16le', '-d', 'auto_null.monitor']);
+  const micStream = spawn('parec', ['--format=s16le', '-d', deviceName]);
   const ffmpeg = spawn('ffmpeg', ['-f', 's16le', '-ar', '44100', '-ac', '2', '-i', 'pipe:0', '-f', 'opus', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] });
 
   const audioStream = new Writable({
