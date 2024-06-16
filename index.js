@@ -1,7 +1,7 @@
-import { Client, GatewayIntentBits } from 'discord.js';
-import { readFile } from 'fs';
-import { StreamType } from '@discordjs/voice';
-import { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus } from '@discordjs/voice';
+const { Client, GatewayIntentBits } = require('discord.js');
+const fs = require('fs');
+const { StreamType } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus } = require('@discordjs/voice');
 
 const client = new Client({ 
   intents: [
@@ -98,7 +98,7 @@ client.on('messageCreate', async message => {
   }
 });
 
-readFile('token', 'utf8', (err, data) => {
+fs.readFile('token', 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
     return;
