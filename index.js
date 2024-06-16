@@ -11,9 +11,10 @@ const client = new Client({
     GatewayIntentBits.MessageContent]
 });
 
-import { Transform } from 'stream';
+const Transform = require('stream').Transform;
 
-import { Readable } from 'stream';
+const { Readable } = require('stream');
+
 
 class BufferingTransform extends Transform {
   constructor(options) {
