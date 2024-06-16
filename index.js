@@ -50,6 +50,13 @@ function startMicrophoneStreaming() {
   const spawn = require('child_process').spawn;
   const micStream = spawn('parec', ['--format=s16le', '-d', 'auto_null.monitor']);
   const ffmpeg = spawn('ffmpeg', ['-f', 's16le', '-ar', '44100', '-ac', '2', '-i', 'pipe:0', '-f', 'opus', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] });
+
+  const audioStream = new Readable({
+    read() {
+      // The _read method is required but can be a no-op
+    }
+  });
+
   if (useBuffering) {
     micStream.stdout.pipe(ffmpeg.stdin);
     ffmpeg.stdout.pipe(bufferingTransform);
@@ -57,12 +64,6 @@ function startMicrophoneStreaming() {
     micStream.stdout.pipe(ffmpeg.stdin);
     ffmpeg.stdout.pipe(audioStream);
   }
-
-  const audioStream = new Readable({
-    read() {
-      // The _read method is required but can be a no-op
-    }
-  });
 
   bufferingTransform.on('data', (chunk) => {
     if (useBuffering) {
