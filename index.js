@@ -11,6 +11,8 @@ const client = new Client({
     GatewayIntentBits.MessageContent]
 });
 
+const useBuffering = false; // Set this to false to disable buffering
+
 const Transform = require('stream').Transform;
 
 const { Readable } = require('stream');
@@ -48,8 +50,13 @@ function startMicrophoneStreaming() {
   const spawn = require('child_process').spawn;
   const micStream = spawn('parec', ['--format=s16le', '-d', 'auto_null.monitor']);
   const ffmpeg = spawn('ffmpeg', ['-f', 's16le', '-ar', '44100', '-ac', '2', '-i', 'pipe:0', '-f', 'opus', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] });
-  micStream.stdout.pipe(ffmpeg.stdin);
-  ffmpeg.stdout.pipe(bufferingTransform);
+  if (useBuffering) {
+    micStream.stdout.pipe(ffmpeg.stdin);
+    ffmpeg.stdout.pipe(bufferingTransform);
+  } else {
+    micStream.stdout.pipe(ffmpeg.stdin);
+    ffmpeg.stdout.pipe(audioStream);
+  }
 
   const audioStream = new Readable({
     read() {
@@ -58,8 +65,10 @@ function startMicrophoneStreaming() {
   });
 
   bufferingTransform.on('data', (chunk) => {
-    audioStream.push(chunk);
-    console.log(`Received chunk of size ${chunk.length}`);
+    if (useBuffering) {
+      audioStream.push(chunk);
+      console.log(`Received chunk of size ${chunk.length}`);
+    }
   });
 
   const audioResource = createAudioResource(audioStream, {
